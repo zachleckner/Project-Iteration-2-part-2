@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <title>CommonPage</title>
+    <link rel="stylesheet" href="Core.css">
+</head>
+<body>
+    <row class = "rTitle">
+        Indian Pop Radio Manager
+    </row>
+    <container class= "vContainer">
+        <column class = "cNav">
+            <row class = "rNav">
+                <a href="CommonPage.html">Home</a>
+            </row>
+            <row class = "rNav">
+                <a href="CommonPage.html">Back</a>
+            </row>
+            <row class = "row">
+                Manager
+            </row>
+            <row class = "row">
+                <a href="ProducerLogin.html">Producer</a>
+            </row>
+            <row class = "row">
+                DJ
+            </row>
+        </column>
+        <column class = "cSelect">
+            <row class = "rHeading">
+
+            </row>
+            <row class = "row">
+
+            </row>
+        </column>
+        <column class = "cMain">
+            <row class = "rHeading">
+                Producer Login
+            </row>
+            <row class = "row">
+                <form onsubmit="return validateForm()">
+                    <table style="border: 1px solid #000; width: 100%; padding: 1em; background-color: #201E1E;">
+                        <tr>
+                            <td>username:</td>
+                            <td><input type="text" id="username" style="width: 100%;"></td>
+                        </tr>
+                        <tr>
+                            <td>password:</td>
+                            <td><input type="password" id="password" style="width: 100%;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class = "errorMessage" id="errorMessage" style="width: 100%; color: red"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><button type="submit" style="width: 100%;">Submit</button></td>
+                        </tr>
+                    </table>
+                </form>
+            </row>
+        </column>
+    </container>
+    <script>
+        function validateForm() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var errorMessage = document.getElementById('errorMessage');
+            if (!username || !password) {
+                errorMessage.textContent = 'Please enter both Producer ID and password.';
+                return false;
+            }   
+            if (username === 'username' && password === 'password') {
+                alert('Redirecting to Producer.html');
+                window.location.href = 'Producer.html';
+                return false; 
+            }
+            errorMessage.textContent = 'Incorrect Producer ID or password.';
+            return false;
+        }
+    </script> 
+</body>
+</html>
