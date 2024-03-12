@@ -62,11 +62,11 @@
     </container>
     <script>
         function validateForm() {
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
-            var errorMessage = document.getElementById('errorMessage');
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+            let errorMessage = document.getElementById('errorMessage');
             if (!username || !password) {
-                errorMessage.textContent = 'Please enter both Producer ID and password.';
+                errorMessage.textContent = 'Please enter both username and password.';
                 return false;
             }   
             if (username === 'username' && password === 'password') {
@@ -74,7 +74,7 @@
                 window.location.href = 'Producer.html';
                 return false; 
             }
-            errorMessage.textContent = 'Incorrect Producer ID or password.';
+            errorMessage.textContent = 'Incorrect username or password.';
             return false;
         }
     </script> 

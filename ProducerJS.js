@@ -1,84 +1,102 @@
-function createSelect(playList, song, selectedValue) {
-    let select = document.createElement('select');
-    playList.map(value => {
-        let option = document.createElement('option');
-        option.text = value;
-        option.value = value;
-        option.selected = (value === song);
-        select.add(option);
-    });
-    select.addEventListener('change', function () {
-        selectedValue(this.value);
-    });
-    return select;
-}
+class Producer {
+    constructor(djList, playList, timeSlots) {
+        this.djList = djList;
+        this.playList = playList;
+        this.timeSlots = timeSlots;
+    }
 
-function addSong(djName, slotIndex, selectedValue) {
-    timeSlots[djName][slotIndex].songs.push(selectedValue);
-    closePopup();
-    openPopup(djName, slotIndex);
-}
+    createSelect(playList, song, selectedValue) {
+        let select = document.createElement('select');
+        playList.map(value => {
+            let option = document.createElement('option');
+            option.text = value;
+            option.value = value;
+            option.selected = (value === song);
+            select.add(option);
+        });
+        select.addEventListener('change', function () {
+            selectedValue(this.value);
+        });
+        return select;
+    }
 
-function removeSong(djName, slotIndex, songIndex) {
-    timeSlots[djName][slotIndex].songs.splice(songIndex, 1);
-    closePopup();
-    openPopup(djName, slotIndex);
-}
+    addSong(djName, slotIndex, selectedValue) {
+        this.timeSlots[djName][slotIndex].songs.push(selectedValue);
+        this.closePopup();
+        this.openPopup(djName, slotIndex);
+    }
 
-function closePopup() {
-    let popup = document.querySelector('.popup');
-    popup.style.display = 'none';
-}
+    removeSong(djName, slotIndex, songIndex) {
+        this.timeSlots[djName][slotIndex].songs.splice(songIndex, 1);
+        this.closePopup();
+        this.openPopup(djName, slotIndex);
+    }
 
-function openPopup(djName, slotIndex) {
-    let popup = document.querySelector('.popup');
-    popup.style.display = 'block';
-    let ul = document.getElementById('songList');
-    ul.innerHTML = ''; 
-    let currentSongs = timeSlots[djName][slotIndex].songs;
-    currentSongs.forEach((song, songIndex) => {
+    closePopup() {
+        let popup = document.querySelector('.popup');
+        popup.style.display = 'none';
+    }
+
+    openPopup(djName, slotIndex) {
+        let popup = document.querySelector('.popup');
+        popup.style.display = 'block';
+        let ul = document.getElementById('songList');
+        ul.innerHTML = '';
+        let currentSongs = this.timeSlots[djName][slotIndex].songs;
+        currentSongs.forEach((song, songIndex) => {
+            let li = document.createElement('li');
+            let select = this.createSelect(this.playList, song, (selectedValue) => {
+                currentSongs[songIndex] = selectedValue;
+            });
+            li.appendChild(select);
+            let removeButton = document.createElement('button');
+            removeButton.innerText = 'Remove';
+            removeButton.addEventListener('click', () => {
+                this.removeSong(djName, slotIndex, songIndex);
+            });
+            li.appendChild(removeButton);
+            ul.appendChild(li);
+        });
+
         let li = document.createElement('li');
-        let select = createSelect(playList, song, (selectedValue) => {
-            currentSongs[songIndex] = selectedValue;
+        let select = this.createSelect(this.playList, 'notSelectedValue', (selectedValue) => {
+            this.addSong(djName, slotIndex, selectedValue);
         });
         li.appendChild(select);
-        let removeButton = document.createElement('button');
-        removeButton.innerText = 'Remove';
-        removeButton.addEventListener('click', () => {
-            removeSong(djName, slotIndex, songIndex);
-        });
-        li.appendChild(removeButton);
         ul.appendChild(li);
-    });
 
-    let li = document.createElement('li');
-    let select = createSelect(playList, 'notSelectedValue', (selectedValue) => {
-        addSong(djName, slotIndex, selectedValue);
-    });
-    li.appendChild(select);
-    ul.appendChild(li);
+        let closeButton = document.querySelector('.popup .closeButton');
+        closeButton.addEventListener('click', this.closePopup);
+    }
 
-    let closeButton = document.querySelector('.popup .closeButton');
-    closeButton.addEventListener('click', closePopup);
-}
+    timeSlot(slots, djName) {
+        let column = document.getElementById("djColumn");
+        column.innerHTML = slots.map((slot, index) => {
+            return `<row class="rSlot">date: ${slot.date} start: ${slot.start} end: ${slot.end} <button onclick="producer.openPopup('${djName}', ${index})">Edit</button></row>`;
+        }).join('');
+    }
 
-function timeSlot(slots, djName) {
-    let column = document.getElementById("djColumn");
-    column.innerHTML = slots.map((slot, index) => {
-        return `<row class="rSlot">date: ${slot.date} start: ${slot.start} end: ${slot.end} <button onclick="openPopup('${djName}', ${index})">Edit</button></row>`;
-    }).join('');
-}
+    selectDJ(selectedDJSlot) {
+        document.querySelectorAll("#djList li").forEach(li => li.style.border = "1px solid black");
+        selectedDJSlot.style.border = "1px solid green";
+        let selectedDJ = selectedDJSlot.textContent;
+        let slots = this.timeSlots[selectedDJ];
+        this.timeSlot(slots, selectedDJ);
+    }
 
-function selectDJ(selectedTimeSlot) {
-    document.querySelectorAll("li").forEach(li => li.style.border = "1px solid black");
-    selectedTimeSlot.style.border = "1px solid green";
-    let selectedDJ = selectedTimeSlot.textContent;
-    let slots = timeSlots[selectedDJ];
-    timeSlot(slots, selectedDJ);
+    initialize() {
+        let ul = document.getElementById("djList");
+        ul.innerHTML = this.djList.map(dj => `<li>${dj}</li>`).join('');
+        document.querySelectorAll("#djList li").forEach(li => {
+            li.addEventListener("click", () => {
+                this.selectDJ(li);
+            });
+        });
+    }
 }
 
 let djList = ["DJ1", "DJ2", "DJ3"];
-playList = ["Unselected", "song1", "song2", "song3"];
+let playList = ["Unselected", "song1", "song2", "song3"];
 
 let timeSlots = {
     "DJ1": [
@@ -95,13 +113,8 @@ let timeSlots = {
     ]
 };
 
-let ul = document.getElementById("djList");
-ul.innerHTML = djList.map(dj => `<li>${dj}</li>`).join('');
-document.querySelectorAll("#djList li").forEach(li => {
-    li.addEventListener("click", function () {
-        selectDJ(this);
-    });
-});
+let producer = new Producer(djList, playList, timeSlots);
+producer.initialize();
 
 
 
